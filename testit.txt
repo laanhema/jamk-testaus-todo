@@ -1,0 +1,25 @@
+
+TESTATTAVAT OMINAISUUDET
+
+- Uuden taskin luominen
+- Päivittyykö uudet luodut taskit käyttöliittymän listaan näkyviin
+- Aiemmin luodun taskin muokkaaminen
+- Aiemmin luodun taskin poistaminen
+- Varmistetaan että data tallentuu localstorageen pysyvästi (kunnes selaimen cache tyhjennetään)
+- Varmistetaan että data haetaan localstoragesta kun sovellus avataan (aiemmin luodut taskit
+näkyvät käyttöliittymässä)
+- Testataan toimiiko tekstikenttien validointi oikein kun luodaan uusi task tai kun muokataan
+aiemmin luotua taskia (otsikko on pakollinen kenttä + max. 120 merkkiä, tarkempi kuvaus on
+valinnainen)
+- Testataan voiko taskin merkitä tehdyksi
+- Vaihtuuko tehdyksi merkityn taskin tyyli ja painike tilaan "undo"
+- Testataan voiko aiemmin merkityn taskin merkitä uudelleen tekemättömäksi
+- Vaihtuuko tekemättömän taskin tyyli takaisin ja painike tilaan "complete"
+- Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan
+- Voiko taskeja filtteröidä niiden tärkeysluokittelun mukaisesti
+- Jos listassa ei ole yhtään taskia näkyykö käyttöliittymässä teksti "No tasks yet. Add your first task
+above."
+- Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle
+- Aukeaako taskin poistamisen yhteydessä dialogi-ikkuna joka varmistaa haluaako käyttäjä
+varmasti poistaa tämän
+- Testataan muuttuuko task automaattisesti tehdyksi jos sen status-kentän muuttaa arvoon "done"

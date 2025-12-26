@@ -1,5 +1,10 @@
+// eslint config comments
+
 /* eslint-env browser */
+// eslint-disable-next-line no-redeclare
 /* global document, window, localStorage */
+
+// task-objektin type definition dokumentaatiota varten
 
 /**
  * @typedef {Object} Task
@@ -13,33 +18,75 @@
  * @property {number} updatedAt
  */
 
+// enables strict mode in javascript
 'use strict';
 
-(function () {
-  // Storage key and helpers
-  const STORAGE_KEY = 'todo_tasks_v1';
-  /** @returns {Array} */
-  function loadTasks() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }
-  function saveTasks(tasks) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }
-  function generateId() {
-    return (
-      't_' +
-      Math.random().toString(36).slice(2, 8) +
-      Date.now().toString(36).slice(-4)
-    );
-  }
+// Storage key and helpers
+const STORAGE_KEY = 'todo_tasks_v1';
 
+// lataa taskit localstoragesta
+/** @returns {Array} */
+function loadTasks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+// tallentaa taskit localstorageen
+function saveTasks(tasks) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+// generoi id:n
+function generateId() {
+  return (
+    't_' +
+    Math.random().toString(36).slice(2, 8) +
+    Date.now().toString(36).slice(-4)
+  );
+}
+
+// muuttaa erikoismerkit html-entiteeteiksi
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+// luo statukselle badgen
+function badgeForStatus(status) {
+  const label =
+    {
+      todo: 'To do',
+      'in-progress': 'In progress',
+      blocked: 'Blocked',
+      done: 'Done',
+    }[status] || status;
+  return `<span class="badge">${label}</span>`;
+}
+
+// Export for testing (Node.js/Vitest environment)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    loadTasks,
+    saveTasks,
+    generateId,
+    escapeHtml,
+    badgeForStatus,
+    STORAGE_KEY,
+  };
+}
+
+// koko app on tehty nimettömän funktion sisään jota invoketaan heti tässä
+(function () {
   // DOM refs
   const form = /** @type {HTMLFormElement} */ (
     document.getElementById('task-form')
@@ -76,9 +123,10 @@
   );
 
   // State
+  // taskit löytyy tästä muuttujasta
   let tasks = loadTasks();
 
-  // Render
+  // Renderöi taskit
   function render() {
     list.innerHTML = '';
     if (!tasks.length) {
@@ -127,27 +175,7 @@
       });
   }
 
-  function badgeForStatus(status) {
-    const label =
-      {
-        todo: 'To do',
-        'in-progress': 'In progress',
-        blocked: 'Blocked',
-        done: 'Done',
-      }[status] || status;
-    return `<span class="badge">${label}</span>`;
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
-  }
-
-  // Form handling
+  // formin event listener (kun täytetään tietoja uudelle taskille)
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const now = Date.now();
@@ -187,10 +215,12 @@
     render();
   });
 
+  // reset buttonin event listener
   resetBtn.addEventListener('click', () => {
     resetForm();
   });
 
+  // reset buttoniin liitetty funktio
   function resetForm() {
     formTitle.textContent = 'Create Task';
     inputId.value = '';
@@ -201,6 +231,8 @@
   }
 
   // List actions (event delegation)
+  // event listener kun klikataan yksittäisestä taskista
+  // riippuen mistä html-elementistä klikataan tehdään joko edit, complete tai delete action
   list.addEventListener('click', (e) => {
     const target = /** @type {HTMLElement} */ (e.target);
     if (target.tagName !== 'BUTTON') return;
