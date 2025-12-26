@@ -1,20 +1,19 @@
-
-TESTATTAVAT OMINAISUUDET
+|--------------------------|
+|-TESTATTAVAT-OMINAISUUDET-|
+|--------------------------|
 
 (yksikkötestit)
 
 - Uuden taskin luominen v
 - Varmistetaan että data tallentuu localstorageen pysyvästi (kunnes selaimen cache tyhjennetään) v
-- Varmistetaan että data haetaan localstoragesta kun sovellus avataan (aiemmin luodut taskit
-näkyvät käyttöliittymässä) v
-- Testataan toimiiko tekstikenttien validointi oikein kun luodaan uusi task tai kun muokataan
-aiemmin luotua taskia (otsikko on pakollinen kenttä + max. 120 merkkiä, tarkempi kuvaus on
-valinnainen) v
+- Varmistetaan että data haetaan localstoragesta kun sovellus avataan (aiemmin luodut taskit näkyvät käyttöliittymässä) v
+- Testataan toimiiko tekstikenttien validointi oikein kun luodaan uusi task tai kun muokataan aiemmin luotua taskia (otsikko on pakollinen kenttä + max. 120 merkkiä, tarkempi kuvaus on valinnainen) v
 - Testataan muuttuuko task automaattisesti tehdyksi jos sen status-kentän muuttaa arvoon "done" v
 - Aiemmin luodun taskin muokkaaminen v
 - Aiemmin luodun taskin poistaminen v
 - Testataan voiko taskin merkitä tehdyksi v
 - Testataan voiko aiemmin merkityn taskin merkitä uudelleen tekemättömäksi v
+
 -------------------------------------------------------------------------
 
 (end-to-end testit)
@@ -24,8 +23,6 @@ valinnainen) v
 - Vaihtuuko tekemättömän taskin tyyli takaisin ja painike tilaan "complete"
 - Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan
 - Voiko taskeja filtteröidä niiden tärkeysluokittelun mukaisesti
-- Jos listassa ei ole yhtään taskia näkyykö käyttöliittymässä teksti "No tasks yet. Add your first task
-above."
+- Jos listassa ei ole yhtään taskia näkyykö käyttöliittymässä teksti "No tasks yet. Add your first task above."
 - Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle
-- Aukeaako taskin poistamisen yhteydessä dialogi-ikkuna joka varmistaa haluaako käyttäjä
-varmasti poistaa tämän
+- Aukeaako taskin poistamisen yhteydessä dialogi-ikkuna joka varmistaa haluaako käyttäjä varmasti poistaa tämän
