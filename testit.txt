@@ -1,19 +1,26 @@
 
 TESTATTAVAT OMINAISUUDET
 
-- Uuden taskin luominen
-- Päivittyykö uudet luodut taskit käyttöliittymän listaan näkyviin
-- Aiemmin luodun taskin muokkaaminen
-- Aiemmin luodun taskin poistaminen
-- Varmistetaan että data tallentuu localstorageen pysyvästi (kunnes selaimen cache tyhjennetään)
+(yksikkötestit)
+
+- Uuden taskin luominen v
+- Varmistetaan että data tallentuu localstorageen pysyvästi (kunnes selaimen cache tyhjennetään) v
 - Varmistetaan että data haetaan localstoragesta kun sovellus avataan (aiemmin luodut taskit
-näkyvät käyttöliittymässä)
+näkyvät käyttöliittymässä) v
 - Testataan toimiiko tekstikenttien validointi oikein kun luodaan uusi task tai kun muokataan
 aiemmin luotua taskia (otsikko on pakollinen kenttä + max. 120 merkkiä, tarkempi kuvaus on
-valinnainen)
-- Testataan voiko taskin merkitä tehdyksi
+valinnainen) v
+- Testataan muuttuuko task automaattisesti tehdyksi jos sen status-kentän muuttaa arvoon "done" v
+- Aiemmin luodun taskin muokkaaminen v
+- Aiemmin luodun taskin poistaminen v
+- Testataan voiko taskin merkitä tehdyksi v
+- Testataan voiko aiemmin merkityn taskin merkitä uudelleen tekemättömäksi v
+-------------------------------------------------------------------------
+
+(end-to-end testit)
+
+- Päivittyykö uudet luodut taskit käyttöliittymän listaan näkyviin
 - Vaihtuuko tehdyksi merkityn taskin tyyli ja painike tilaan "undo"
-- Testataan voiko aiemmin merkityn taskin merkitä uudelleen tekemättömäksi
 - Vaihtuuko tekemättömän taskin tyyli takaisin ja painike tilaan "complete"
 - Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan
 - Voiko taskeja filtteröidä niiden tärkeysluokittelun mukaisesti
@@ -22,4 +29,3 @@ above."
 - Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle
 - Aukeaako taskin poistamisen yhteydessä dialogi-ikkuna joka varmistaa haluaako käyttäjä
 varmasti poistaa tämän
-- Testataan muuttuuko task automaattisesti tehdyksi jos sen status-kentän muuttaa arvoon "done"

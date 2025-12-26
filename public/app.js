@@ -86,70 +86,72 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 // koko app on tehty nimettömän funktion sisään jota invoketaan heti tässä
-(function () {
-  // DOM refs
-  const form = /** @type {HTMLFormElement} */ (
-    document.getElementById('task-form')
-  );
-  const formTitle = /** @type {HTMLElement} */ (
-    document.getElementById('form-title')
-  );
-  const inputId = /** @type {HTMLInputElement} */ (
-    document.getElementById('task-id')
-  );
-  const inputTopic = /** @type {HTMLInputElement} */ (
-    document.getElementById('topic')
-  );
-  const inputPriority = /** @type {HTMLSelectElement} */ (
-    document.getElementById('priority')
-  );
-  const inputStatus = /** @type {HTMLSelectElement} */ (
-    document.getElementById('status')
-  );
-  const inputDescription = /** @type {HTMLTextAreaElement} */ (
-    document.getElementById('description')
-  );
-  const saveBtn = /** @type {HTMLButtonElement} */ (
-    document.getElementById('save-btn')
-  );
-  const resetBtn = /** @type {HTMLButtonElement} */ (
-    document.getElementById('reset-btn')
-  );
-  const list = /** @type {HTMLUListElement} */ (
-    document.getElementById('task-list')
-  );
-  const emptyState = /** @type {HTMLElement} */ (
-    document.getElementById('empty-state')
-  );
+// Only run in browser environment (not during tests)
+if (typeof document !== 'undefined') {
+  (function () {
+    // DOM refs
+    const form = /** @type {HTMLFormElement} */ (
+      document.getElementById('task-form')
+    );
+    const formTitle = /** @type {HTMLElement} */ (
+      document.getElementById('form-title')
+    );
+    const inputId = /** @type {HTMLInputElement} */ (
+      document.getElementById('task-id')
+    );
+    const inputTopic = /** @type {HTMLInputElement} */ (
+      document.getElementById('topic')
+    );
+    const inputPriority = /** @type {HTMLSelectElement} */ (
+      document.getElementById('priority')
+    );
+    const inputStatus = /** @type {HTMLSelectElement} */ (
+      document.getElementById('status')
+    );
+    const inputDescription = /** @type {HTMLTextAreaElement} */ (
+      document.getElementById('description')
+    );
+    const saveBtn = /** @type {HTMLButtonElement} */ (
+      document.getElementById('save-btn')
+    );
+    const resetBtn = /** @type {HTMLButtonElement} */ (
+      document.getElementById('reset-btn')
+    );
+    const list = /** @type {HTMLUListElement} */ (
+      document.getElementById('task-list')
+    );
+    const emptyState = /** @type {HTMLElement} */ (
+      document.getElementById('empty-state')
+    );
 
-  // State
-  // taskit löytyy tästä muuttujasta
-  let tasks = loadTasks();
+    // State
+    // taskit löytyy tästä muuttujasta
+    let tasks = loadTasks();
 
-  // Renderöi taskit
-  function render() {
-    list.innerHTML = '';
-    if (!tasks.length) {
-      emptyState.style.display = 'block';
-      return;
-    }
-    emptyState.style.display = 'none';
+    // Renderöi taskit
+    function render() {
+      list.innerHTML = '';
+      if (!tasks.length) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
 
-    tasks
-      .sort((a, b) => {
-        // Not-done first, then by priority (high->low), then newest first
-        if (a.completed !== b.completed) return a.completed ? 1 : -1;
-        const prioRank = { high: 0, medium: 1, low: 2 };
-        if (prioRank[a.priority] !== prioRank[b.priority]) {
-          return prioRank[a.priority] - prioRank[b.priority];
-        }
-        return b.createdAt - a.createdAt;
-      })
-      .forEach((t) => {
-        const li = document.createElement('li');
-        li.className = 'task' + (t.completed ? ' done' : '');
-        li.dataset.id = t.id;
-        li.innerHTML = `
+      tasks
+        .sort((a, b) => {
+          // Not-done first, then by priority (high->low), then newest first
+          if (a.completed !== b.completed) return a.completed ? 1 : -1;
+          const prioRank = { high: 0, medium: 1, low: 2 };
+          if (prioRank[a.priority] !== prioRank[b.priority]) {
+            return prioRank[a.priority] - prioRank[b.priority];
+          }
+          return b.createdAt - a.createdAt;
+        })
+        .forEach((t) => {
+          const li = document.createElement('li');
+          li.className = 'task' + (t.completed ? ' done' : '');
+          li.dataset.id = t.id;
+          li.innerHTML = `
 					<div>
 						<div class="title">${escapeHtml(t.topic)}</div>
 						<div class="desc">${escapeHtml(t.description || '')}</div>
@@ -171,115 +173,116 @@ if (typeof module !== 'undefined' && module.exports) {
 						<button data-action="delete" class="danger">Delete</button>
 					</div>
 				`;
-        list.appendChild(li);
-      });
-  }
-
-  // formin event listener (kun täytetään tietoja uudelle taskille)
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const now = Date.now();
-    const payload = {
-      topic: inputTopic.value.trim(),
-      priority: inputPriority.value,
-      status: inputStatus.value,
-      description: inputDescription.value.trim(),
-    };
-    if (!payload.topic) {
-      inputTopic.focus();
-      return;
+          list.appendChild(li);
+        });
     }
 
-    if (inputId.value) {
-      const idx = tasks.findIndex((t) => t.id === inputId.value);
-      if (idx !== -1) {
-        tasks[idx] = {
-          ...tasks[idx],
+    // formin event listener (kun täytetään tietoja uudelle taskille)
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const now = Date.now();
+      const payload = {
+        topic: inputTopic.value.trim(),
+        priority: inputPriority.value,
+        status: inputStatus.value,
+        description: inputDescription.value.trim(),
+      };
+      if (!payload.topic) {
+        inputTopic.focus();
+        return;
+      }
+
+      if (inputId.value) {
+        const idx = tasks.findIndex((t) => t.id === inputId.value);
+        if (idx !== -1) {
+          tasks[idx] = {
+            ...tasks[idx],
+            ...payload,
+            completed: payload.status === 'done' ? true : tasks[idx].completed,
+            updatedAt: now,
+          };
+        }
+      } else {
+        const newTask = {
+          id: generateId(),
           ...payload,
-          completed: payload.status === 'done' ? true : tasks[idx].completed,
+          completed: payload.status === 'done',
+          createdAt: now,
           updatedAt: now,
         };
+        tasks.push(newTask);
       }
-    } else {
-      const newTask = {
-        id: generateId(),
-        ...payload,
-        completed: payload.status === 'done',
-        createdAt: now,
-        updatedAt: now,
-      };
-      tasks.push(newTask);
+      saveTasks(tasks);
+      resetForm();
+      render();
+    });
+
+    // reset buttonin event listener
+    resetBtn.addEventListener('click', () => {
+      resetForm();
+    });
+
+    // reset buttoniin liitetty funktio
+    function resetForm() {
+      formTitle.textContent = 'Create Task';
+      inputId.value = '';
+      form.reset();
+      inputPriority.value = 'medium';
+      inputStatus.value = 'todo';
+      saveBtn.textContent = 'Save Task';
     }
-    saveTasks(tasks);
-    resetForm();
+
+    // List actions (event delegation)
+    // event listener kun klikataan yksittäisestä taskista
+    // riippuen mistä html-elementistä klikataan tehdään joko edit, complete tai delete action
+    list.addEventListener('click', (e) => {
+      const target = /** @type {HTMLElement} */ (e.target);
+      if (target.tagName !== 'BUTTON') return;
+      const action = target.dataset.action;
+      /** @type {HTMLElement | null} */
+      const li = target.closest('.task');
+      if (!li) return;
+      const id = li.dataset.id;
+      const idx = tasks.findIndex((t) => t.id === id);
+      if (idx === -1) return;
+
+      if (action === 'edit') {
+        const t = tasks[idx];
+        formTitle.textContent = 'Edit Task';
+        inputId.value = t.id;
+        inputTopic.value = t.topic;
+        inputPriority.value = t.priority;
+        inputStatus.value = t.status;
+        inputDescription.value = t.description || '';
+        saveBtn.textContent = 'Update Task';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      if (action === 'complete') {
+        const t = tasks[idx];
+        const nextCompleted = !t.completed;
+        tasks[idx] = {
+          ...t,
+          completed: nextCompleted,
+          status: nextCompleted
+            ? 'done'
+            : t.status === 'done'
+            ? 'todo'
+            : t.status,
+          updatedAt: Date.now(),
+        };
+        saveTasks(tasks);
+        render();
+      }
+      if (action === 'delete') {
+        const confirmDelete = window.confirm('Delete this task?');
+        if (!confirmDelete) return;
+        tasks.splice(idx, 1);
+        saveTasks(tasks);
+        render();
+      }
+    });
+
+    // Initial paint
     render();
-  });
-
-  // reset buttonin event listener
-  resetBtn.addEventListener('click', () => {
-    resetForm();
-  });
-
-  // reset buttoniin liitetty funktio
-  function resetForm() {
-    formTitle.textContent = 'Create Task';
-    inputId.value = '';
-    form.reset();
-    inputPriority.value = 'medium';
-    inputStatus.value = 'todo';
-    saveBtn.textContent = 'Save Task';
-  }
-
-  // List actions (event delegation)
-  // event listener kun klikataan yksittäisestä taskista
-  // riippuen mistä html-elementistä klikataan tehdään joko edit, complete tai delete action
-  list.addEventListener('click', (e) => {
-    const target = /** @type {HTMLElement} */ (e.target);
-    if (target.tagName !== 'BUTTON') return;
-    const action = target.dataset.action;
-    /** @type {HTMLElement | null} */
-    const li = target.closest('.task');
-    if (!li) return;
-    const id = li.dataset.id;
-    const idx = tasks.findIndex((t) => t.id === id);
-    if (idx === -1) return;
-
-    if (action === 'edit') {
-      const t = tasks[idx];
-      formTitle.textContent = 'Edit Task';
-      inputId.value = t.id;
-      inputTopic.value = t.topic;
-      inputPriority.value = t.priority;
-      inputStatus.value = t.status;
-      inputDescription.value = t.description || '';
-      saveBtn.textContent = 'Update Task';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    if (action === 'complete') {
-      const t = tasks[idx];
-      const nextCompleted = !t.completed;
-      tasks[idx] = {
-        ...t,
-        completed: nextCompleted,
-        status: nextCompleted
-          ? 'done'
-          : t.status === 'done'
-          ? 'todo'
-          : t.status,
-        updatedAt: Date.now(),
-      };
-      saveTasks(tasks);
-      render();
-    }
-    if (action === 'delete') {
-      const confirmDelete = window.confirm('Delete this task?');
-      if (!confirmDelete) return;
-      tasks.splice(idx, 1);
-      saveTasks(tasks);
-      render();
-    }
-  });
-
-  // Initial paint
-  render();
-})();
+  })();
+}
