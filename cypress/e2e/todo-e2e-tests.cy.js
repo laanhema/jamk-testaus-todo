@@ -1,43 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-/*
- * Yllä oleva rivi (mukaanlukien ///-merkit) käynnistää IntelliSensen tälle kyseiselle tiedostolle, jonka avulla
- * näemme funktioiden definitionit
- */
-
-// describe – Mocha.js:n toiminto, joka kuvaa testijoukkoa
-// describe('My First Test', () => {
-//   // it – Mocha.js:n toiminto, joka kuvaa yksittäistä testitapausta
-//   it('clicking "type" shows the right headings', () => {
-//     // cy. – viittaa Cypressin toimintoihin
-//     // visit – vieraillaan annetulla verkkosivulla
-//     cy.visit('https://example.cypress.io');
-
-//     // wait – odotetaan annetun millisekuntien ajan.
-//     cy.wait(5000);
-
-//     // contains – etsi DOM-elementin joka sisältää annetun arvon
-//     // click – klikataan DOM-elementtiä
-//     cy.contains('type').click();
-
-//     cy.wait(5000);
-
-//     // url – haetaan tämänhetkinen URL
-//     // should – jokin tulisi olla jotain, määritellään argumenteillä
-//     // include – sisältää jonkin annetun arvon
-//     cy.url().should('include', '/commands/actions');
-
-//     // get – haetaan DOM-elementti
-//     // type – kirjoitetaan DOM-elementtiin
-//     // have.value – tarkistetaan, että valitussa elementissä on annettu arvo
-//     // piste-operaattorilla voidaan ketjuttaa komentoja
-//     cy.get('.action-email')
-//       .type('fake@email.com')
-//       .should('have.value', 'fake@email.com');
-//   });
-// });
-
 describe('TODO-app E2E tests', () => {
   beforeEach(() => {
     cy.visit('/'); // Clear localStorage before each test for isolation
@@ -130,7 +93,7 @@ describe('TODO-app E2E tests', () => {
     cy.get('#description').should('not.be.disabled').should('contain.text', '');
   });
 
-  it('Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle -> Toimiiko aiemmin luodun taskin muokkaus halutulla tavalla', () => {
+  it('Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle -> Toimiiko aiemmin luodun taskin muokkaus halutulla tavalla -> Reloadataan sivu ja tarkistetaan että aiemmin lisätyt taskit näkyvät edelleen käyttöliittymässä -> Tyhjennetään localStorage ja reloadataan uudestaan nyt ei pitäisi olla yhtään taskia listassa', () => {
     // luodaan muutamia uusia taskeja, tarpeeksi että scrollbar ilmestyy sivulle
     const testData = [
       'first',
@@ -177,7 +140,7 @@ describe('TODO-app E2E tests', () => {
       .type('edited description');
     cy.get('#save-btn').click();
 
-    // onko taskin tiedot nyt muuttuneet listassa myös
+    // tarkistetaan onko taskin tiedot nyt muuttuneet listassa myös
     cy.get('#task-list .task:nth-child(10)')
       .scrollIntoView()
       .find('.title')
@@ -185,54 +148,130 @@ describe('TODO-app E2E tests', () => {
     cy.get('#task-list .task:nth-child(10)')
       .find('.desc')
       .should('contain.text', 'edited description');
+
+    // reloadataan sivu
+    cy.wait(1000);
+    cy.reload();
+    // cy.wait(1000);
+
+    // aiemmin lisätyt 10 taskia pitäisi vielä näkyä sivulla
+    // jos ei näy, localstorage ei toimi oikein
+    cy.get('#task-list .task').should('have.length', 10);
+
+    // tarkistetaan että aiemmin muokattu task näkyy oikealla nimellä
+    cy.get('#task-list .task:nth-child(10) .title').should(
+      'contain.text',
+      'edited title'
+    );
+
+    // tarkistetaan muutama muu task että ne ovat tallentuneet oikein
+    cy.get('#task-list .task:nth-child(1) .title').should(
+      'contain.text',
+      'hwhwhwhh'
+    );
+    cy.get('#task-list .task:nth-child(2) .title').should(
+      'contain.text',
+      'cggcgcghdh'
+    );
+    cy.get('#task-list .task:nth-child(9) .title').should(
+      'contain.text',
+      'asdasdasds'
+    );
+
+    // entä jos cache tyhjennetään
+    cy.clearLocalStorage();
+    cy.reload();
+
+    // tämä pitäisi näkyä nyt
+    cy.get('#empty-state').should(
+      'contain.text',
+      'No tasks yet. Add your first task above.'
+    );
   });
-  /*
-  it('creates a new task and displays it in the list', () => {
-    // Fill in the form
-    cy.get('#topic').type('Testitaski').should('have.value', 'Testitaski');
+
+  it('Testataan muuttuuko uusi task automaattisesti tehdyksi jos sen status kentän muuttaa arvoon "done"', () => {
+    // luodaan uusi task
+    cy.get('#topic').should('not.be.disabled').type('already done task 1');
     cy.get('#description')
-      .type('Testitaskin kuvaus')
-      .should('have.value', 'Testitaskin kuvaus');
-    // Submit the form
+      .should('not.be.disabled')
+      .type('this task is already done as I am creating it');
+    cy.get('#status').should('not.be.disabled').select('Done');
+
     cy.get('#save-btn').click();
-    // Verify the task appears in the list
-    cy.get('#task-list').should('be.visible');
-    cy.get('#task-list.task').should('have.length', 1); // Check the task contains correct content
-    cy.get('#task-list.task')
-      .first()
-      .within(() => {
-        cy.get('.title').should('contain', 'Testitaski');
-        cy.get('.desc').should('contain', 'Testitaskin kuvaus');
-      }); // Verify empty state is hidden
-    cy.get('#empty-state').should('not.be.visible'); // Verify task is persisted in localStorage
-    cy.window().then((win) => {
-      const tasks = JSON.parse(win.localStorage.getItem('todo_tasks_v1'));
-      expect(tasks).to.have.length(1);
-      expect(tasks[0].topic).to.equal('Testitaski');
-      expect(tasks[0].description).to.equal('Testitaskin kuvaus');
-      expect(tasks[0].priority).to.equal('medium'); // default value
-      expect(tasks[0].status).to.equal('todo'); // default value
-      expect(tasks[0].completed).to.be.false;
-    });
+
+    // varmistetaan että se lisätään listaan käyttöliittymään näkyviin
+    cy.get('#task-list .task:first-child div div.title')
+      .should('contain.text', 'already done task')
+      .should('be.visible');
+
+    // varmistetaan että taskin tyyli on "done"
+    cy.get('#task-list .task:first-child').should('have.class', 'done');
   });
-  it('deletes a task and verifies it is removed', () => {
-    // First, create a task
-    cy.get('#topic').type('Poistettava taski');
-    cy.get('#description').type('Tämä poistetaan');
-    cy.get('#save-btn').click(); // Verify task was created
-    cy.get('#task-list.task').should('have.length', 1);
-    cy.get('#task-list.task.title').should('contain', 'Poistettava taski'); // Delete the task
-    cy.get('#task-list.task')
-      .first()
-      .within(() => {
-        cy.get('button[data-action="delete"]').click();
-      }); // Verify task is removed from the list
-    cy.get('#task-list .task').should('have.length', 0); // Verify empty state is displayed
-    cy.get('#empty-state').should('be.visible'); // Verify task is removed from localStorage
-    cy.window().then((win) => {
-      const tasks = JSON.parse(win.localStorage.getItem('todo_tasks_v1'));
-      expect(tasks).to.have.length(0);
-    });
+
+  it('Testataan lomakkeen validointi: Jos topic kenttä on tyhjä ja yritetään tallentaa niin pitäisi näkyä "Please fill out this field" viesti', () => {
+    // varmistetaan että topic-kenttä on tyhjä
+    cy.get('#topic').should('have.value', '');
+
+    // yritetään klikata tallenna-nappia
+    cy.get('#save-btn').click();
+
+    // tarkistetaan että validointiviesti ilmestyy
+    cy.get('#topic')
+      .invoke('prop', 'validationMessage')
+      .should('contain', 'Please fill out this field');
+
+    // tarkistetaan että topic-kenttä on invalidi
+    cy.get('#topic').should('have.attr', 'required');
+
+    // kirjoitetaan nyt jotain topic-kenttään
+    cy.get('#topic').type('valid task title');
+
+    // nyt validointiviesti ei pitäisi olla
+    cy.get('#topic').invoke('prop', 'validationMessage').should('equal', '');
+
+    // tallennetaan task
+    cy.get('#save-btn').click();
+
+    // varmistetaan että task ilmestyi listaan
+    cy.get('#task-list .task:first-child .title').should(
+      'contain.text',
+      'valid task title'
+    );
   });
-  */
+
+  it('Testataan että topic-kenttä ei hyväksy yli 120 merkkiä pitkiä otsikkoja', () => {
+    // luodaan 121 merkkiä pitkä teksti
+    const longTitle = 'a'.repeat(121);
+
+    // yritetään kirjoittaa liian pitkä otsikko
+    cy.get('#topic').type(longTitle);
+
+    // tarkistetaan että kentässä on maksimissaan 120 merkkiä
+    cy.get('#topic')
+      .invoke('val')
+      .then((value) => {
+        expect(value.length).to.be.at.most(120);
+      });
+
+    // tarkistetaan että maxlength-attribuutti on asetettu
+    cy.get('#topic').should('have.attr', 'maxlength', '120');
+
+    // tyhjennetään kenttä ja kirjoitetaan tasan 120 merkkiä
+    cy.get('#topic').clear();
+    const validTitle = 'b'.repeat(120);
+    cy.get('#topic').type(validTitle);
+
+    // tallennetaan task
+    cy.get('#save-btn').click();
+
+    // varmistetaan että task tallentui
+    cy.get('#task-list .task:first-child .title').should('exist');
+
+    // tarkistetaan että title on täsmälleen 120 merkkiä
+    cy.get('#task-list .task:first-child .title')
+      .invoke('text')
+      .then((text) => {
+        expect(text.length).to.equal(120);
+      });
+  });
 });

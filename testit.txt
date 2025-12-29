@@ -6,10 +6,10 @@
 
 - Uuden taskin luominen vv
 
-- Varmistetaan että data tallentuu localstorageen pysyvästi (kunnes selaimen cache tyhjennetään) v
-- Varmistetaan että data haetaan localstoragesta kun sovellus avataan (aiemmin luodut taskit näkyvät käyttöliittymässä) v
-- Testataan toimiiko tekstikenttien validointi oikein kun luodaan uusi task tai kun muokataan aiemmin luotua taskia (otsikko on pakollinen kenttä + max. 120 merkkiä, tarkempi kuvaus on valinnainen) v
-- Testataan muuttuuko task automaattisesti tehdyksi jos sen status-kentän muuttaa arvoon "done" v
+- Varmistetaan että data tallentuu localstorageen pysyvästi (kunnes selaimen cache tyhjennetään) vv
+- Varmistetaan että data haetaan localstoragesta kun sovellus avataan (aiemmin luodut taskit näkyvät käyttöliittymässä) vv
+- Testataan toimiiko tekstikenttien validointi oikein kun luodaan uusi task tai kun muokataan aiemmin luotua taskia (otsikko on pakollinen kenttä + max. 120 merkkiä, tarkempi kuvaus on valinnainen) vv
+- Testataan muuttuuko task automaattisesti tehdyksi jos sen status-kentän muuttaa arvoon "done" vv
 
 - Aiemmin luodun taskin muokkaaminen vv
 - Aiemmin luodun taskin poistaminen vv
