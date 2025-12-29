@@ -24,9 +24,10 @@
 - Vaihtuuko tekemättömän taskin tyyli takaisin ja painike tilaan "complete" vv
 - Aukeaako taskin poistamisen yhteydessä dialogi-ikkuna joka varmistaa haluaako käyttäjä varmasti poistaa tämän vv
 - Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan vv
+- Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle vv
 -------------------------------------------------------------------------
 
 
-- Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle
+
 
 - Voiko taskeja filtteröidä niiden tärkeysluokittelun mukaisesti (myöhemmin)

@@ -43,13 +43,15 @@ describe('TODO-app E2E tests', () => {
     cy.visit('/'); // Clear localStorage before each test for isolation
     cy.clearLocalStorage();
   });
+
   it('Jos listassa ei ole yhtään taskia näkyykö käyttöliittymässä teksti "No tasks yet. Add your first task above."', () => {
     cy.get('#empty-state').should(
       'contain.text',
       'No tasks yet. Add your first task above.'
     );
   });
-  it('Luodaan uusi task -> varmistetaan että se tulee käyttöliittymään listaan näkyviin -> painetaan "Complete" ja varmistetaan että task tulee tehdyksi -> painetaan "Undo" ja varmistetaan että task on nyt tekemättä -> poistetaan task -> varmistetaan että task on nyt poistettu käyttöliittymästä', () => {
+
+  it('Luodaan uusi task -> Varmistetaan että se tulee käyttöliittymään listaan näkyviin -> Painetaan "Complete" ja varmistetaan että task tulee tehdyksi -> Painetaan "Undo" ja varmistetaan että task on nyt tekemättä -> Poistetaan task -> Varmistetaan että task on nyt poistettu käyttöliittymästä', () => {
     // luodaan uusi task
     cy.get('#topic').should('not.be.disabled').type('task 1');
     cy.get('#save-btn').click();
@@ -110,6 +112,7 @@ describe('TODO-app E2E tests', () => {
     cy.get('#task-list .task:first-child').should('not.exist');
     // cy.wait(99999);
   });
+
   it('Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan', () => {
     // luodaan uusi task ja kirjoitetaan kenttiin jotain ja vaihdetaan select valikoiden arvot johonkin
     cy.get('#topic').should('not.be.disabled').type('asdasdasds');
@@ -127,6 +130,40 @@ describe('TODO-app E2E tests', () => {
     cy.get('#description').should('not.be.disabled').should('contain.text', '');
   });
 
+  it('Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle', () => {
+    // luodaan muutamia uusia taskeja, tarpeeksi että scrollbar ilmestyy sivulle
+    const testData = [
+      'first',
+      'asdasdasds',
+      'asdasdasd',
+      'fasf',
+      'eeqeg',
+      'qfwddwa',
+      'qwageg',
+      'rhdhdrh',
+      'cggcgcghdh',
+      'hwhwhwhh',
+    ];
+    for (let i = 0; i < testData.length; i++) {
+      cy.get('#topic').should('not.be.disabled').type(testData[i]);
+      cy.get('#save-btn').click();
+    }
+    // scrollataan alas sivulle ensimmäisen lisätyn elementin kohdalle (title="first")
+    cy.get('#task-list .task:nth-child(10)').scrollIntoView();
+
+    // painetaan viimeisen (10.) elementin Edit-nappia
+    cy.get('#task-list .task:nth-child(10)')
+      .should('contain.text', 'first')
+      .find('.controls > button:nth-child(1)')
+      .should('contain.text', 'Edit')
+      .click();
+
+    // varmistetaan että form-title on nyt näkyvissä viewportissa
+    cy.get('#form-title').should('be.visible');
+
+    // varmistetaan että sivu scrollasi ylös sivun alkuun (Y-koordinaatti 0 tai lähes 0)
+    cy.window().its('scrollY').should('be.at.most', 5);
+  });
   /*
   it('creates a new task and displays it in the list', () => {
     // Fill in the form
