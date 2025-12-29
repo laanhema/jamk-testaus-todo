@@ -49,7 +49,7 @@ describe('TODO-app E2E tests', () => {
       'No tasks yet. Add your first task above.'
     );
   });
-  it('Luodaan uusi task -> varmistetaan että se tulee käyttöliittymään listaan näkyviin -> painetaan "Complete" ja varmistetaan että task tulee tehdyksi -> painetaan "Undo" ja varmistetaan että task on nyt tekemättä', () => {
+  it('Luodaan uusi task -> varmistetaan että se tulee käyttöliittymään listaan näkyviin -> painetaan "Complete" ja varmistetaan että task tulee tehdyksi -> painetaan "Undo" ja varmistetaan että task on nyt tekemättä -> poistetaan task -> varmistetaan että task on nyt poistettu käyttöliittymästä', () => {
     // luodaan uusi task
     cy.get('#topic').should('not.be.disabled').type('task 1');
     cy.get('#save-btn').click();
@@ -103,10 +103,28 @@ describe('TODO-app E2E tests', () => {
       .should('contain.text', 'Delete')
       .click();
 
-    // painetaan modal-ikkunasta yes
+    // painetaan modal-ikkunasta OK
     cy.on('window:confirm', () => true);
 
+    // varmistetaan että task on poistettu
+    cy.get('#task-list .task:first-child').should('not.exist');
     // cy.wait(99999);
+  });
+  it('Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan', () => {
+    // luodaan uusi task ja kirjoitetaan kenttiin jotain ja vaihdetaan select valikoiden arvot johonkin
+    cy.get('#topic').should('not.be.disabled').type('asdasdasds');
+    cy.get('#priority').should('not.be.disabled').select('High');
+    cy.get('#status').should('not.be.disabled').select('In progress');
+    cy.get('#description').should('not.be.disabled').type('asdasdasdasdasdsa');
+    // sitten painetaan reset ja katsotaan muuttuuko kentät oletusarvohin
+    cy.get('#reset-btn').click();
+
+    cy.get('#topic').should('not.be.disabled').should('contain.text', '');
+    cy.get('#priority')
+      .should('not.be.disabled')
+      .should('have.value', 'medium');
+    cy.get('#status').should('not.be.disabled').should('have.value', 'todo');
+    cy.get('#description').should('not.be.disabled').should('contain.text', '');
   });
 
   /*

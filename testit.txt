@@ -23,9 +23,10 @@
 - Vaihtuuko tehdyksi merkityn taskin tyyli ja painike tilaan "undo" vv
 - Vaihtuuko tekemättömän taskin tyyli takaisin ja painike tilaan "complete" vv
 - Aukeaako taskin poistamisen yhteydessä dialogi-ikkuna joka varmistaa haluaako käyttäjä varmasti poistaa tämän vv
+- Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan vv
 -------------------------------------------------------------------------
 
-- Tyhjentääkö reset-painike kirjoitettavat kentät oletusarvoihin kuten halutaan
-- Voiko taskeja filtteröidä niiden tärkeysluokittelun mukaisesti
+
 - Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle
 
+- Voiko taskeja filtteröidä niiden tärkeysluokittelun mukaisesti (myöhemmin)
