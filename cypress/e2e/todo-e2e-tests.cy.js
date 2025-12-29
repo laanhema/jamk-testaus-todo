@@ -43,23 +43,55 @@ describe('TODO-app E2E tests', () => {
     cy.visit('/'); // Clear localStorage before each test for isolation
     cy.clearLocalStorage();
   });
-  it('Luodaan uusi task ja varmistetaan että se tulee käyttöliittymään listaan näkyviin', () => {
-    // luodaan uusi task
-    cy.get('#topic').should('not.be.disabled').type('task 1');
-    cy.get('#save-btn').click();
-    // varmistetaan että se lisätään listaan
-    cy.get('#task-list .task:first-child div div.title').should(
-      'contain.text',
-      'task 1'
-    );
-  });
   it('Jos listassa ei ole yhtään taskia näkyykö käyttöliittymässä teksti "No tasks yet. Add your first task above."', () => {
-    //
     cy.get('#empty-state').should(
       'contain.text',
       'No tasks yet. Add your first task above.'
     );
   });
+  it('Luodaan uusi task ja varmistetaan että se tulee käyttöliittymään listaan näkyviin', () => {
+    // luodaan uusi task
+    cy.get('#topic').should('not.be.disabled').type('task 1');
+    cy.get('#save-btn').click();
+
+    // varmistetaan että se lisätään listaan käyttöliittymään näkyviin
+    cy.get('#task-list .task:first-child div div.title')
+      .should('contain.text', 'task 1')
+      .should('be.visible');
+
+    // painetaan task 1 kohdalla "Complete"
+    cy.get('#task-list .task:first-child div div.title')
+      .should('contain.text', 'task 1')
+      .get('.controls > button:nth-child(2)')
+      .click();
+
+    // varmistetaan että taskin tyyli muuttuu (done-luokka lisätään)
+    cy.get('#task-list .task:first-child').should('have.class', 'done');
+
+    // nyt painikkeessa pitäisi lukea "Undo"
+    cy.get('#task-list .task:first-child div div.title')
+      .should('contain.text', 'task 1')
+      .get('.controls > button:nth-child(2)')
+      .should('contain.text', 'Undo');
+
+    // painetaan task 1 kohdalla "Undo"
+    cy.get('#task-list .task:first-child div div.title')
+      .should('contain.text', 'task 1')
+      .get('.controls > button:nth-child(2)')
+      .click();
+
+    // varmistetaan taskin tyyli muuttuu takaisin (done-luokka poistetaan)
+    cy.get('#task-list .task:first-child').should('not.have.class', 'done');
+
+    // varmistetaan että nyt task 1 kohdalla lukee taas "Complete"
+    cy.get('#task-list .task:first-child div div.title')
+      .should('contain.text', 'task 1')
+      .get('.controls > button:nth-child(2)')
+      .should('contain.text', 'Complete');
+    //
+    // cy.wait(99999);
+  });
+
   /*
   it('creates a new task and displays it in the list', () => {
     // Fill in the form
