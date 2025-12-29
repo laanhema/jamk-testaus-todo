@@ -130,7 +130,7 @@ describe('TODO-app E2E tests', () => {
     cy.get('#description').should('not.be.disabled').should('contain.text', '');
   });
 
-  it('Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle', () => {
+  it('Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle -> Toimiiko aiemmin luodun taskin muokkaus halutulla tavalla', () => {
     // luodaan muutamia uusia taskeja, tarpeeksi että scrollbar ilmestyy sivulle
     const testData = [
       'first',
@@ -163,6 +163,28 @@ describe('TODO-app E2E tests', () => {
 
     // varmistetaan että sivu scrollasi ylös sivun alkuun (Y-koordinaatti 0 tai lähes 0)
     cy.window().its('scrollY').should('be.at.most', 5);
+
+    // muokataan taskin kenttiä ja painetaan save
+    cy.get('#topic')
+      .should('not.be.disabled')
+      .type('{selectall}{backspace}')
+      .type('edited title');
+    cy.get('#priority').should('not.be.disabled').select('Low');
+    cy.get('#status').should('not.be.disabled').select('Blocked');
+    cy.get('#description')
+      .should('not.be.disabled')
+      .type('{selectall}{backspace}')
+      .type('edited description');
+    cy.get('#save-btn').click();
+
+    // onko taskin tiedot nyt muuttuneet listassa myös
+    cy.get('#task-list .task:nth-child(10)')
+      .scrollIntoView()
+      .find('.title')
+      .should('contain.text', 'edited title');
+    cy.get('#task-list .task:nth-child(10)')
+      .find('.desc')
+      .should('contain.text', 'edited description');
   });
   /*
   it('creates a new task and displays it in the list', () => {

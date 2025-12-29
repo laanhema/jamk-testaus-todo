@@ -5,14 +5,16 @@
 (yksikkötestit)
 
 - Uuden taskin luominen vv
+
 - Varmistetaan että data tallentuu localstorageen pysyvästi (kunnes selaimen cache tyhjennetään) v
 - Varmistetaan että data haetaan localstoragesta kun sovellus avataan (aiemmin luodut taskit näkyvät käyttöliittymässä) v
 - Testataan toimiiko tekstikenttien validointi oikein kun luodaan uusi task tai kun muokataan aiemmin luotua taskia (otsikko on pakollinen kenttä + max. 120 merkkiä, tarkempi kuvaus on valinnainen) v
 - Testataan muuttuuko task automaattisesti tehdyksi jos sen status-kentän muuttaa arvoon "done" v
-- Aiemmin luodun taskin muokkaaminen v
-- Aiemmin luodun taskin poistaminen v
-- Testataan voiko taskin merkitä tehdyksi v
-- Testataan voiko aiemmin merkityn taskin merkitä uudelleen tekemättömäksi v
+
+- Aiemmin luodun taskin muokkaaminen vv
+- Aiemmin luodun taskin poistaminen vv
+- Testataan voiko taskin merkitä tehdyksi vv
+- Testataan voiko aiemmin merkityn taskin merkitä uudelleen tekemättömäksi vv
 
 -------------------------------------------------------------------------
 
