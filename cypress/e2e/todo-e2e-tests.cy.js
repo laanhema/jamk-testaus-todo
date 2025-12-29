@@ -49,7 +49,7 @@ describe('TODO-app E2E tests', () => {
       'No tasks yet. Add your first task above.'
     );
   });
-  it('Luodaan uusi task ja varmistetaan että se tulee käyttöliittymään listaan näkyviin', () => {
+  it('Luodaan uusi task -> varmistetaan että se tulee käyttöliittymään listaan näkyviin -> painetaan "Complete" ja varmistetaan että task tulee tehdyksi -> painetaan "Undo" ja varmistetaan että task on nyt tekemättä', () => {
     // luodaan uusi task
     cy.get('#topic').should('not.be.disabled').type('task 1');
     cy.get('#save-btn').click();
@@ -88,7 +88,24 @@ describe('TODO-app E2E tests', () => {
       .should('contain.text', 'task 1')
       .get('.controls > button:nth-child(2)')
       .should('contain.text', 'Complete');
-    //
+
+    // poistetaan task 1
+
+    // laitetaan cypress kuuntelemaan että modal ikkuna ilmestyy
+    cy.on('window:confirm', (text) => {
+      expect(text).to.contain('Delete this task?');
+    });
+
+    // painetaan delete
+    cy.get('#task-list .task:first-child div div.title')
+      .should('contain.text', 'task 1')
+      .get('.controls > button:nth-child(3)')
+      .should('contain.text', 'Delete')
+      .click();
+
+    // painetaan modal-ikkunasta yes
+    cy.on('window:confirm', () => true);
+
     // cy.wait(99999);
   });
 
