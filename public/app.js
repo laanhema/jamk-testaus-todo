@@ -124,7 +124,7 @@ if (typeof document !== 'undefined') {
       document.getElementById('empty-state')
     );
 
-    // status pills html elements:
+    // priority filtering pills html elements:
 
     const pillLow =
       /** @type {HTMLElement} */ document.getElementById('pill-low');
@@ -227,6 +227,112 @@ if (typeof document !== 'undefined') {
       resetForm();
       render();
     });
+
+    // State for active filters (can be multiple)
+    let activeFilters = new Set();
+
+    pillLow.addEventListener('click', () => {
+      toggleFilter('low');
+    });
+
+    pillMedium.addEventListener('click', () => {
+      toggleFilter('medium');
+    });
+
+    pillHigh.addEventListener('click', () => {
+      toggleFilter('high');
+    });
+
+    function toggleFilter(priority) {
+      // Toggle filter on/off
+      if (activeFilters.has(priority)) {
+        activeFilters.delete(priority);
+      } else {
+        activeFilters.add(priority);
+      }
+
+      // Update active class for each pill
+      if (activeFilters.has('low')) {
+        pillLow.classList.add('active');
+      } else {
+        pillLow.classList.remove('active');
+      }
+
+      if (activeFilters.has('medium')) {
+        pillMedium.classList.add('active');
+      } else {
+        pillMedium.classList.remove('active');
+      }
+
+      if (activeFilters.has('high')) {
+        pillHigh.classList.add('active');
+      } else {
+        pillHigh.classList.remove('active');
+      }
+
+      filterTasks();
+    }
+
+    function filterTasks() {
+      list.innerHTML = '';
+
+      // Filter tasks based on active filters
+      // If no filters are active, show all tasks
+      // If filters are active, show tasks that match ANY of the active filters
+      const filteredTasks =
+        activeFilters.size === 0
+          ? tasks
+          : tasks.filter((t) => activeFilters.has(t.priority));
+
+      if (!filteredTasks.length) {
+        emptyState.style.display = 'block';
+        emptyState.textContent =
+          activeFilters.size === 0
+            ? 'No tasks yet.'
+            : `No tasks found with selected priority filters.`;
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      filteredTasks
+        .sort((a, b) => {
+          // Not-done first, then by priority (high->low), then newest first
+          if (a.completed !== b.completed) return a.completed ? 1 : -1;
+          const prioRank = { high: 0, medium: 1, low: 2 };
+          if (prioRank[a.priority] !== prioRank[b.priority]) {
+            return prioRank[a.priority] - prioRank[b.priority];
+          }
+          return b.createdAt - a.createdAt;
+        })
+        .forEach((t) => {
+          const li = document.createElement('li');
+          li.className = 'task' + (t.completed ? ' done' : '');
+          li.dataset.id = t.id;
+          li.innerHTML = `
+					<div>
+						<div class="title">${escapeHtml(t.topic)}</div>
+						<div class="desc">${escapeHtml(t.description || '')}</div>
+					</div>
+					<div class="meta">
+						<span class="badge prio-${t.priority}">
+							<span class="dot"></span>
+							${t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+						</span>
+					</div>
+					<div class="meta">
+						${badgeForStatus(t.status)}
+					</div>
+					<div class="controls">
+						<button data-action="edit" class="secondary">Edit</button>
+						<button data-action="complete" class="${t.completed ? 'secondary' : ''}">
+							${t.completed ? 'Undo' : 'Complete'}
+						</button>
+						<button data-action="delete" class="danger">Delete</button>
+					</div>
+				`;
+          list.appendChild(li);
+        });
+    }
 
     // reset buttonin event listener
     resetBtn.addEventListener('click', () => {

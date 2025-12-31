@@ -130,7 +130,18 @@ button:disabled {
   padding: 2px 8px;
   border-radius: 999px;
   color: #2b8a6e;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
+#pill-low:hover {
+  background-color: #f0f0f0;
+}
+#pill-low.active {
+  background-color: #2b8a6e;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(43, 138, 110, 0.4);
+}
+
 #pill-medium {
   background-color: #fff;
   font-size: 12px;
@@ -138,7 +149,18 @@ button:disabled {
   padding: 2px 8px;
   border-radius: 999px;
   color: #3f63cf;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
+#pill-medium:hover {
+  background-color: #f0f0f0;
+}
+#pill-medium.active {
+  background-color: #3f63cf;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(63, 99, 207, 0.4);
+}
+
 #pill-high {
   background-color: #fff;
   font-size: 12px;
@@ -146,6 +168,16 @@ button:disabled {
   padding: 2px 8px;
   border-radius: 999px;
   color: #c3425b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#pill-high:hover {
+  background-color: #f0f0f0;
+}
+#pill-high.active {
+  background-color: #c3425b;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(195, 66, 91, 0.4);
 }
 
 .task-list {
