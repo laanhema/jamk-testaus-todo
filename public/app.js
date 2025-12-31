@@ -124,6 +124,17 @@ if (typeof document !== 'undefined') {
       document.getElementById('empty-state')
     );
 
+    // status pills html elements:
+
+    const pillLow =
+      /** @type {HTMLElement} */ document.getElementById('pill-low');
+
+    const pillMedium =
+      /** @type {HTMLElement} */ document.getElementById('pill-medium');
+
+    const pillHigh =
+      /** @type {HTMLElement} */ document.getElementById('pill-high');
+
     // State
     // taskit löytyy tästä muuttujasta
     let tasks = loadTasks();

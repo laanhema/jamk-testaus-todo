@@ -122,20 +122,29 @@ button:disabled {
   gap: 6px;
   align-items: center;
 }
-.pill {
+
+#pill-low {
   background-color: #fff;
   font-size: 12px;
   font-weight: bold;
   padding: 2px 8px;
   border-radius: 999px;
-}
-.pill.low {
   color: #2b8a6e;
 }
-.pill.medium {
+#pill-medium {
+  background-color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 999px;
   color: #3f63cf;
 }
-.pill.high {
+#pill-high {
+  background-color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 999px;
   color: #c3425b;
 }
 
