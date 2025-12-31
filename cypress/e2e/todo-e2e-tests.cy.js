@@ -7,6 +7,157 @@ describe('TODO-app E2E tests', () => {
     cy.clearLocalStorage();
   });
 
+  it('Testataan voiko taskeja filtteröidä niiden tärkeysluokittelun mukaisesti', () => {
+    // luodaan muutamia uusia taskeja eri priorityillä
+    const testData = [
+      { title: 'test task 1', prio: 'Low' },
+      { title: 'test task 2', prio: 'Medium' },
+      { title: 'test task 3', prio: 'High' },
+      { title: 'test task 4', prio: 'Low' },
+      { title: 'test task 5', prio: 'Medium' },
+      { title: 'test task 6', prio: 'High' },
+      { title: 'test task 7', prio: 'High' },
+      { title: 'test task 8', prio: 'High' },
+      { title: 'test task 9', prio: 'Medium' },
+      { title: 'test task 10', prio: 'Low' },
+    ];
+    for (let i = 0; i < testData.length; i++) {
+      cy.get('#topic').should('not.be.disabled').type(testData[i].title);
+      cy.get('#priority').should('not.be.disabled').select(testData[i].prio);
+      cy.get('#save-btn').click();
+    }
+
+    // klikataan 'Low' -> tarkistetaan että listassa näkyy nyt 3 taskia: 10, 4, 1
+    cy.get('#pill-low').should('not.be.disabled').click();
+    let expectedTasks = ['task 10', 'task 4', 'task 1'];
+    for (let i = 0; i < expectedTasks.length; i++) {
+      cy.get(`#task-list .task:nth-child(${i + 1}) div div.title`).should(
+        'contain.text',
+        expectedTasks[i]
+      );
+    }
+    cy.get('#pill-low').should('not.be.disabled').click();
+
+    // klikataan 'Medium' -> tarkistetaan että listassa näkyy nyt 3 taskia: 9, 5, 2
+    cy.get('#pill-medium').should('not.be.disabled').click();
+    expectedTasks = ['task 9', 'task 5', 'task 2'];
+    for (let i = 0; i < expectedTasks.length; i++) {
+      cy.get(`#task-list .task:nth-child(${i + 1}) div div.title`).should(
+        'contain.text',
+        expectedTasks[i]
+      );
+    }
+    cy.get('#pill-medium').should('not.be.disabled').click();
+
+    // klikataan 'High' -> tarkistetaan että listassa näkyy nyt 4 taskia: 8, 7, 6, 3
+    cy.get('#pill-high').should('not.be.disabled').click();
+    expectedTasks = ['task 8', 'task 7', 'task 6', 'task 3'];
+    for (let i = 0; i < expectedTasks.length; i++) {
+      cy.get(`#task-list .task:nth-child(${i + 1}) div div.title`).should(
+        'contain.text',
+        expectedTasks[i]
+      );
+    }
+    cy.get('#pill-high').should('not.be.disabled').click();
+
+    // Testataan kahta filteriä yhdessä: Low + Medium
+    // Pitäisi näkyä taskit: 9, 5, 2, 10, 4, 1
+    cy.get('#pill-low').should('not.be.disabled').click();
+    cy.get('#pill-medium').should('not.be.disabled').click();
+    expectedTasks = [
+      'task 9',
+      'task 5',
+      'task 2',
+      'task 10',
+      'task 4',
+      'task 1',
+    ];
+    cy.get('#task-list .task').should('have.length', expectedTasks.length);
+    for (let i = 0; i < expectedTasks.length; i++) {
+      cy.get(`#task-list .task:nth-child(${i + 1}) div div.title`).should(
+        'contain.text',
+        expectedTasks[i]
+      );
+    }
+    cy.get('#pill-low').should('not.be.disabled').click();
+    cy.get('#pill-medium').should('not.be.disabled').click();
+
+    // Testataan kahta filteriä yhdessä: Medium + High
+    // Pitäisi näkyä taskit: 8, 7, 6, 3, 9, 5, 2
+    cy.get('#pill-medium').should('not.be.disabled').click();
+    cy.get('#pill-high').should('not.be.disabled').click();
+    expectedTasks = [
+      'task 8',
+      'task 7',
+      'task 6',
+      'task 3',
+      'task 9',
+      'task 5',
+      'task 2',
+    ];
+    cy.get('#task-list .task').should('have.length', expectedTasks.length);
+    for (let i = 0; i < expectedTasks.length; i++) {
+      cy.get(`#task-list .task:nth-child(${i + 1}) div div.title`).should(
+        'contain.text',
+        expectedTasks[i]
+      );
+    }
+    cy.get('#pill-medium').should('not.be.disabled').click();
+    cy.get('#pill-high').should('not.be.disabled').click();
+
+    // Testataan kahta filteriä yhdessä: Low + High
+    // Pitäisi näkyä taskit: 8, 7, 6, 3, 10, 4, 1
+    cy.get('#pill-low').should('not.be.disabled').click();
+    cy.get('#pill-high').should('not.be.disabled').click();
+    expectedTasks = [
+      'task 8',
+      'task 7',
+      'task 6',
+      'task 3',
+      'task 10',
+      'task 4',
+      'task 1',
+    ];
+    cy.get('#task-list .task').should('have.length', expectedTasks.length);
+    for (let i = 0; i < expectedTasks.length; i++) {
+      cy.get(`#task-list .task:nth-child(${i + 1}) div div.title`).should(
+        'contain.text',
+        expectedTasks[i]
+      );
+    }
+    cy.get('#pill-low').should('not.be.disabled').click();
+    cy.get('#pill-high').should('not.be.disabled').click();
+
+    // Testataan kolmea filteriä yhdessä: Low + Medium + High
+    // Pitäisi näkyä kaikki 10 taskia tässä järjestyksessä: 8, 7, 6, 3, 9, 5, 2, 10, 4, 1
+    cy.get('#pill-low').should('not.be.disabled').click();
+    cy.get('#pill-medium').should('not.be.disabled').click();
+    cy.get('#pill-high').should('not.be.disabled').click();
+    cy.get('#task-list .task').should('have.length', 10);
+    expectedTasks = [
+      'task 8',
+      'task 7',
+      'task 6',
+      'task 3',
+      'task 9',
+      'task 5',
+      'task 2',
+      'task 10',
+      'task 4',
+      'task 1',
+    ];
+    cy.get('#task-list .task').should('have.length', expectedTasks.length);
+    for (let i = 0; i < expectedTasks.length; i++) {
+      cy.get(`#task-list .task:nth-child(${i + 1}) div div.title`).should(
+        'contain.text',
+        expectedTasks[i]
+      );
+    }
+    cy.get('#pill-low').should('not.be.disabled').click();
+    cy.get('#pill-medium').should('not.be.disabled').click();
+    cy.get('#pill-high').should('not.be.disabled').click();
+  });
+
   it('Jos listassa ei ole yhtään taskia näkyykö käyttöliittymässä teksti "No tasks yet. Add your first task above."', () => {
     cy.get('#empty-state').should(
       'contain.text',
@@ -95,6 +246,7 @@ describe('TODO-app E2E tests', () => {
 
   it('Scrollaako muokkauspainikkeen klikkaus sivun ylös lomakkeen kohdalle -> Toimiiko aiemmin luodun taskin muokkaus halutulla tavalla -> Reloadataan sivu ja tarkistetaan että aiemmin lisätyt taskit näkyvät edelleen käyttöliittymässä -> Tyhjennetään localStorage ja reloadataan uudestaan nyt ei pitäisi olla yhtään taskia listassa', () => {
     // luodaan muutamia uusia taskeja, tarpeeksi että scrollbar ilmestyy sivulle
+    // kaikki default priority (medium), joten järjestys on: hwhwhwhh, cggcgcghdh, rhdhdrh, qwageg, qfwddwa, eeqeg, fasf, asdasdasd, asdasdasds, first
     const testData = [
       'first',
       'asdasdasds',
@@ -111,10 +263,10 @@ describe('TODO-app E2E tests', () => {
       cy.get('#topic').should('not.be.disabled').type(testData[i]);
       cy.get('#save-btn').click();
     }
-    // scrollataan alas sivulle ensimmäisen lisätyn elementin kohdalle (title="first")
+    // scrollataan alas sivulle viimeisen elementin kohdalle (title="first" on nyt listassa viimeisenä)
     cy.get('#task-list .task:nth-child(10)').scrollIntoView();
 
-    // painetaan viimeisen (10.) elementin Edit-nappia
+    // painetaan viimeisen (10.) elementin Edit-nappia ("first" on viimeisenä koska se luotiin ensimmäisenä)
     cy.get('#task-list .task:nth-child(10)')
       .should('contain.text', 'first')
       .find('.controls > button:nth-child(1)')
@@ -141,6 +293,7 @@ describe('TODO-app E2E tests', () => {
     cy.get('#save-btn').click();
 
     // tarkistetaan onko taskin tiedot nyt muuttuneet listassa myös
+    // Koska priority muutettiin Low:ksi, se on nyt viimeisenä (medium taskit ennen sitä)
     cy.get('#task-list .task:nth-child(10)')
       .scrollIntoView()
       .find('.title')
@@ -159,12 +312,14 @@ describe('TODO-app E2E tests', () => {
     cy.get('#task-list .task').should('have.length', 10);
 
     // tarkistetaan että aiemmin muokattu task näkyy oikealla nimellä
+    // Low priority task on viimeisenä (position 10)
     cy.get('#task-list .task:nth-child(10) .title').should(
       'contain.text',
       'edited title'
     );
 
     // tarkistetaan muutama muu task että ne ovat tallentuneet oikein
+    // Medium priority taskit (uusimmat ensin): hwhwhwhh, cggcgcghdh, ..., asdasdasds
     cy.get('#task-list .task:nth-child(1) .title').should(
       'contain.text',
       'hwhwhwhh'
